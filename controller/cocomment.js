@@ -116,7 +116,7 @@ const deleteCocomment = async (req, res) => {
   }
 };
 
-const updateCocoment = async (req, res) => {
+const updateCocomment = async (req, res) => {
   const token = req.header["access-token"];
   const { cocommentID, body } = req.body;
   try {
@@ -157,6 +157,7 @@ const updateCocoment = async (req, res) => {
 
 module.exports = {
   createCocomment,
+  getCocommentList,
   deleteCocomment,
-  updateCocoment,
+  updateCocomment,
 };

@@ -151,3 +151,10 @@ const deleteComment = async (req, res) => {
     });
   }
 };
+
+module.exports = {
+  createComment,
+  getCommentList,
+  updateComment,
+  deleteComment,
+};
