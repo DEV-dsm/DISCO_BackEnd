@@ -1,6 +1,3 @@
-const user = require("./user");
-const post = require("./post");
-
 module.exports = (sequelize, DataType) => {
   return sequelize.define("comment", {
     commentID: {
@@ -12,7 +9,7 @@ module.exports = (sequelize, DataType) => {
       type: DataType.INTEGER(),
       allowNull: false,
       references: {
-        model: post,
+        model: "posts",
         key: "postID",
       },
     },
@@ -20,7 +17,7 @@ module.exports = (sequelize, DataType) => {
       type: DataType.INTEGER(),
       allowNull: false,
       references: {
-        model: user,
+        model: "users",
         key: "userID",
       },
     },

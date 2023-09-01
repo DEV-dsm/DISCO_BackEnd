@@ -9,11 +9,19 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       autoIncrement: true,
     },
+    postID: {
+      primaryKey: true,
+      type: DataTypes.INTEGER(),
+      references: {
+        model: "posts",
+        key: "postID",
+      },
+    },
     commentID: {
       primaryKey: true,
       type: DataTypes.INTEGER(),
       references: {
-        model: comment,
+        model: "comments",
         key: "commentID",
       },
     },
@@ -21,7 +29,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER(),
       allowNull: false,
       references: {
-        model: user,
+        model: "users",
         key: "userID",
       },
     },
