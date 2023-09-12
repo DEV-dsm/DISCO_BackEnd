@@ -1,4 +1,4 @@
-module.export = (sequelize, DataType) => {
+module.exports = (sequelize, DataType) => {
   return sequelize.define("post", {
     postID: {
       primaryKey: true,
@@ -6,10 +6,11 @@ module.export = (sequelize, DataType) => {
       type: DataType.INTEGER(),
     },
     userID: {
+      type: DataType.INTEGER(),
       allowNull: false,
       references: {
         model: "users",
-        key: "userID"
+        key: "userID",
       },
     },
     title: {
