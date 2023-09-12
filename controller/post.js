@@ -32,6 +32,12 @@ const getPost = async (req, res) => {
       where: { postID },
     });
 
+    if (!thisPost) {
+      return res.status(404).json({
+        message: "게시물 찾을수 없음",
+      });
+    }
+
     return res.status(200).json({
       message: "요청에 성공했습니다",
       thisPost,
