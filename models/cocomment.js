@@ -1,6 +1,3 @@
-const comment = require("./comment");
-const user = require("./user");
-
 module.exports = (sequelize, DataTypes) => {
   return sequelize.define("cocomment", {
     cocommentID: {
