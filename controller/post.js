@@ -18,7 +18,7 @@ const searchPost = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    return res.status(400).json({
+    return res.status(500).json({
       message: "요청에 실패했습니다",
     });
   }
@@ -43,7 +43,7 @@ const getPost = async (req, res) => {
       thisPost,
     });
   } catch (err) {
-    return res.status(400).json({
+    return res.status(500).json({
       message: "요청에 실패했습니다.",
     });
   }

@@ -2,6 +2,7 @@ const user = require("../models/user");
 const post = require("../models/post");
 const comment = require("../models/comment");
 
+//댓글 생성
 const createComment = async (req, res) => {
   const token = req.header["access-token"];
   const { postID, body } = req.body;
@@ -21,7 +22,7 @@ const createComment = async (req, res) => {
     }
     if (!thisPost) {
       return res.status(404).json({
-        massage: "존재하지 않는 게시물",
+        massage: "존재하지 않는 댓글",
       });
     }
 
@@ -35,14 +36,14 @@ const createComment = async (req, res) => {
       massage: "요청에 성공하였습니다.",
     });
   } catch (err) {
-    return res.status(400).json({
+    return res.status(500).json({
       massage: "요청에 실패하였습니다.",
     });
   }
 };
 
+//댓글 목록조회
 const getCommentList = async (req, res) => {
-  const token = req.header["access-token"];
   const { postID } = req.body;
   try {
     const commentList = comment.findAll({
@@ -53,23 +54,20 @@ const getCommentList = async (req, res) => {
         massage: "로그인 되지 않은 사용자",
       });
     }
-    if (!postID) {
-      return res.status(401).json({
-        massage: "로그인 되지 않은 사용자",
-      });
-    }
+
     return res.status(200).json({
       massage: "요청에 성공했습니다.",
       commentList,
     });
   } catch (err) {
     console.error(err);
-    return res.status(400).json({
+    return res.status(500).json({
       massage: "요청에 실패했습니다.",
     });
   }
 };
 
+//댓글 업뎃
 const updateComment = async (req, res) => {
   const token = req.header["access-token"];
   const { commentID, body } = req.body;
@@ -106,12 +104,13 @@ const updateComment = async (req, res) => {
       massage: "요청에 성공했습니다.",
     });
   } catch (err) {
-    return res.status(400).json({
+    return res.status(500).json({
       massage: "요청에 실패했습니다.",
     });
   }
 };
 
+//댓글 삭제
 const deleteComment = async (req, res) => {
   const token = req.header["access-token"];
   const { commentID } = req.body;
@@ -146,7 +145,7 @@ const deleteComment = async (req, res) => {
 
     return res.status(204).json({});
   } catch (err) {
-    return res.status(200).json({
+    return res.status(500).json({
       massage: "요청에 실패했습니다",
     });
   }

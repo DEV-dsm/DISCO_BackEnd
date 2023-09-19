@@ -1,6 +1,7 @@
 const { like } = require("../models");
 const { post } = require("../models");
 
+//좋아요 등록
 const createLike = async (req, res) => {
   const postID = req.params.postID;
   const user = req.decoded["access-token"];
@@ -38,16 +39,17 @@ const createLike = async (req, res) => {
     });
 
     return res.status(201).json({
-      message: "요청 성공",
+      message: "요청에 성공했습니다",
     });
   } catch (err) {
     console.error(err);
-    return res.status(400).json({
+    return res.status(500).json({
       message: "요청에 실패했습니다.",
     });
   }
 };
 
+//좋아요 삭제
 const deleteLike = async (req, res) => {
   const postID = req.params.postID;
   const user = req.decoded["access-token"];
@@ -84,7 +86,7 @@ const deleteLike = async (req, res) => {
     return res.status(204).json({});
   } catch (err) {
     console.error(err);
-    return res.status(400).json({
+    return res.status(500).json({
       message: "요청에 실패했습니다.",
     });
   }
