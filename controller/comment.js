@@ -4,20 +4,20 @@ const comment = require("../models/comment");
 
 //댓글 생성
 const createComment = async (req, res) => {
-  const token = req.header["access-token"];
+  const { userID } = req.decoded;
   const { postID, body } = req.body;
 
   try {
     const thisUser = await user.findOne({
-      where: { token },
+      where: { userID },
     });
     const thisPost = await post.findOne({
       where: { postID },
     });
 
     if (!thisUser) {
-      return res.status(401).json({
-        massage: "로그인되지 않은 사용자",
+      return res.status(404).json({
+        massage: "존재하지 않는 사용자",
       });
     }
     if (!thisPost) {
@@ -28,7 +28,7 @@ const createComment = async (req, res) => {
 
     await comment.create({
       postID,
-      userID: thisUser.userID,
+      userID,
       body,
     });
 
@@ -49,11 +49,6 @@ const getCommentList = async (req, res) => {
     const commentList = comment.findAll({
       where: postID,
     });
-    if (!token) {
-      return res.status(401).json({
-        massage: "로그인 되지 않은 사용자",
-      });
-    }
 
     return res.status(200).json({
       massage: "요청에 성공했습니다.",
@@ -69,22 +64,23 @@ const getCommentList = async (req, res) => {
 
 //댓글 업뎃
 const updateComment = async (req, res) => {
-  const token = req.header["access-token"];
+  const { userID } = req.decoded;
   const { commentID, body } = req.body;
 
   try {
     const thisUser = await user.findOne({
-      where: { token },
+      where: { userID },
     });
     const thisComment = await comment.findOne({
       where: { commentID },
     });
 
     if (!thisUser) {
-      return res.status(401).json({
-        massage: "로그인 되지 않은 사용자",
+      return res.status(404).json({
+        massage: "존재하지 않는 사용자",
       });
     }
+
     if (!thisComment) {
       return res.status(404).json({
         massage: "존재하지 않는 댓글",
