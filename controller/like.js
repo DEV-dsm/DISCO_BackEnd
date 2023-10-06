@@ -4,15 +4,11 @@ const { post } = require("../models");
 //좋아요 등록
 const createLike = async (req, res) => {
   const postID = req.params.postID;
-  const user = req.decoded["access-token"];
+  const { userID } = req.decoded;
 
   try {
     const thisPost = await post.findOne({
       where: { postID },
-    });
-
-    const thisLike = await like.findOne({
-      where: { userID: user.userID, postID },
     });
 
     if (!thisPost) {
@@ -26,6 +22,10 @@ const createLike = async (req, res) => {
         message: "로그인 안된 사용자",
       });
     }
+
+    const thisLike = await like.findOne({
+      where: { userID, postID },
+    });
 
     if (thisLike) {
       return res.status(409).json({
@@ -52,15 +52,11 @@ const createLike = async (req, res) => {
 //좋아요 삭제
 const deleteLike = async (req, res) => {
   const postID = req.params.postID;
-  const user = req.decoded["access-token"];
+  const { userID } = req.decoded;
 
   try {
     const thisPost = await post.findOne({
       where: { postID },
-    });
-
-    const thisLike = await like.findOne({
-      where: { userID: user.userID, postID },
     });
 
     if (!thisPost) {
@@ -69,11 +65,15 @@ const deleteLike = async (req, res) => {
       });
     }
 
-    if (!user) {
+    if (!userID) {
       return res.status(401).json({
         message: "로그인 안된 사용자",
       });
     }
+
+    const thisLike = await like.findOne({
+      where: { userID, postID },
+    });
 
     if (!thisLike) {
       return res.status(409).json({

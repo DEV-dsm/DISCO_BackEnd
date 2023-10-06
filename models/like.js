@@ -1,20 +1,15 @@
-module.exports = (sequelize, DataType) => {
-  return sequelize.define("like", {
-    postID: {
-      type: DataType.INTEGER(),
-      primaryKey: true,
-      references: {
-        model: "users",
-        key: "userID",
-      },
-    },
-    userID: {
-      type: DataType.INTEGER(),
+module.exports = (sequelize, DataTypes) => {
+  const User = sequelize.define("User", {
+    email: {
+      type: DataTypes.STRING,
       allowNull: false,
-      references: {
-        model: "users",
-        key: "userID",
-      },
+      unique: true,
+    },
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
     },
   });
+
+  return User;
 };

@@ -4,33 +4,33 @@ const cocomment = require("../models/cocomment");
 
 //대댓글 생성
 const createCocomment = async (req, res) => {
-  const token = req.header["access-token"];
+  const { userID } = req.decoded;
   const { commentID, body } = req.body;
 
   try {
     const thisUser = await user.findOne({
-      where: { token },
+      where: { userID },
     });
 
     const thisComment = await comment.findOne({
       where: { commentID },
     });
 
-    if (thisComment == null) {
+    if (!thisComment) {
       return res.status(404).json({
         massage: "댓글을 찾을수 없음",
       });
     }
 
-    if (thisUser == null) {
-      return res.status(401).json({
+    if (!thisUser) {
+      return res.status(404).json({
         massage: "로그인 안된 사용자",
       });
     }
 
     await cocomment.create({
       userID: thisUser.userID,
-      comment: commentID,
+      commentID: commentID,
       body,
     });
 
@@ -48,11 +48,12 @@ const createCocomment = async (req, res) => {
 //대댓글 목록조회
 const getCocommentList = async (req, res) => {
   const { commentID } = req.body;
-  
+
   try {
     const cocommentList = await cocomment.findALL({
       where: commentID,
     });
+
     return res.status(200).json({
       massage: "요청에 성공했습니다",
       cocommentList,
@@ -67,7 +68,7 @@ const getCocommentList = async (req, res) => {
 
 //대댓글 삭제
 const deleteCocomment = async (req, res) => {
-  const token = req.header["access-token"];
+  const { userID } = req.decoded;
   const cocommentID = req.body;
 
   try {
@@ -75,7 +76,7 @@ const deleteCocomment = async (req, res) => {
       where: { cocommentID },
     });
     const thisUser = await cocomment.findOne({
-      where: { token },
+      where: { userID },
     });
 
     if (!thisCocomment) {
@@ -84,8 +85,8 @@ const deleteCocomment = async (req, res) => {
       });
     }
     if (!thisUser) {
-      return res.status(401).json({
-        massage: "로그인 되지 않은 유저",
+      return res.status(404).json({
+        massage: "존재하지 않는 유저",
       });
     }
     if (thisUser.userID != thisCocomment.userID) {
@@ -111,19 +112,19 @@ const deleteCocomment = async (req, res) => {
 
 //대댓글 업뎃
 const updateCocomment = async (req, res) => {
-  const token = req.header["access-token"];
+  const { userID } = req.decoded;
   const { cocommentID, body } = req.body;
   try {
     const thisUser = await user.findOne({
-      where: { token },
+      where: { userID },
     });
     const thisCocoment = await cocomment.findOne({
       where: { cocommentID },
     });
 
     if (!thisUser) {
-      return res.status(401).json({
-        massage: "로그인 되지 않은 사용자",
+      return res.status(404).json({
+        massage: "존재하지 않는 사용자",
       });
     }
     if (!thisCocoment) {
