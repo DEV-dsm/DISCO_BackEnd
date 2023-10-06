@@ -49,7 +49,33 @@ const getPost = async (req, res) => {
   }
 };
 
+const getDiary = async (req, res) => {
+  const { userID } = req.decoded;
+
+  try {
+    if (!userID) {
+      return res.status(401).json({
+        message: "로그인 되지 않은 사용자",
+      });
+    }
+
+    const diary = await post.findAll({
+      where: { userID },
+    });
+
+    return res.status(200).json({
+      message: "요청 성공",
+      diary,
+    });
+  } catch (err) {
+    return res.status(400).json({
+      message: "요청 실패",
+    });
+  }
+};
+
 module.exports = {
   searchPost,
   getPost,
+  getDiary,
 };

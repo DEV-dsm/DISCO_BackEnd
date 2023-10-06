@@ -5,6 +5,7 @@ const authMiddleware = require("../middleware/token");
 
 router.get("/:postID", post.getPost);
 router.get("/search", post.searchPost);
+router.get("/diary", authMiddleware, post.getDiary);
 router.post("/:postID/like", authMiddleware, like.createLike);
 router.delete("/:postID/like", authMiddleware, like.deleteLike);
 
