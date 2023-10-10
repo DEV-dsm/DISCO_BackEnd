@@ -79,7 +79,7 @@ const getIssue = async (req, res) => {
 
   try {
     const issues = await post.findAll({
-      where: { createdAt: { [Op.like]: `%${Date}` } },
+      where: { createdAt: { [Op.like]: `%${day}` } },
     });
 
     return res.status(200).json({
