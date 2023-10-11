@@ -10,7 +10,7 @@ module.exports = (sequelize, DataType) => {
     },
     userID: {
       type: DataType.INTEGER(),
-      allowNull: false,
+      primaryKey: true,
       references: {
         model: "users",
         key: "userID",
