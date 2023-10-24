@@ -1,4 +1,4 @@
-module.exports = (sequelize, DataType) => {
+module.exports = (sequelize, DataTypes) => {
   return sequelize.define("like", {
     postID: {
       type: DataType.INTEGER(),
