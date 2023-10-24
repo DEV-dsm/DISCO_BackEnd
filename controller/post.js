@@ -68,8 +68,27 @@ const getDiary = async (req, res) => {
       diary,
     });
   } catch (err) {
-    return res.status(400).json({
+    return res.status(500).json({
       message: "요청 실패",
+    });
+  }
+};
+
+const getIssue = async (req, res) => {
+  const day = new Date();
+
+  try {
+    const issues = await post.findAll({
+      where: { createdAt: { [Op.like]: `%${day}` } },
+    });
+
+    return res.status(200).json({
+      message: "요청에 성공했습니다",
+      issues,
+    });
+  } catch (err) {
+    return res.status(500).json({
+      message: "요청에 실패했습니다",
     });
   }
 };
@@ -78,4 +97,5 @@ module.exports = {
   searchPost,
   getPost,
   getDiary,
+  getIssue,
 };
