@@ -12,26 +12,24 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     password: {
-      type: DataTypes.STRING(20),
+      type: DataTypes.STRING(50),
       allowNull: false,
-      unique: true,
     },
     email: {
       type: DataTypes.STRING(20),
       allowNull: false,
       unique: true,
     },
-    salt: {
-      type: DataTypes.STRING(40),
-      allowNull: false,
-    },
     status: {
       type: DataTypes.STRING(30),
       allowNull: false,
+      defaultValue: "상태메세지가 없습니다.",
+    },
+    salt: {
+      type: DataTypes.STRING(40),
     },
     token: {
       type: DataTypes.STRING(30),
-      allowNull: false,
     },
   });
 };
