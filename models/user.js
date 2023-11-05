@@ -1,4 +1,3 @@
-// models/User.js
 module.exports = (sequelize, DataTypes) => {
   return sequelize.define("user", {
     userID: {
