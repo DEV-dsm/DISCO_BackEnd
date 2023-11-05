@@ -1,7 +1,7 @@
 module.exports = (sequelize, DataTypes) => {
   return sequelize.define("like", {
     postID: {
-      type: DataType.INTEGER(),
+      type: DataTypes.INTEGER(),
       primaryKey: true,
       references: {
         model: "users",
@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
       },
     },
     userID: {
-      type: DataType.INTEGER(),
+      type: DataTypes.INTEGER(),
       primaryKey: true,
       references: {
         model: "users",
