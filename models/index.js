@@ -7,7 +7,7 @@ const db = {};
 const sequelize = new Sequelize({ ...config, Sync: false });
 
 db.sequelize = sequelize;
-db.Sequelize = sequelize;
+db.Sequelize = Sequelize;
 
 db.user = require("./user")(sequelize, Sequelize);
 db.post = require("./post")(sequelize, Sequelize);
