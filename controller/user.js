@@ -15,7 +15,7 @@ async function login(req, res) {
       });
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await bcrypt.compare(password, thisUser.password);
 
     if (!isPasswordValid) {
       return res.status(401).json({ message: "비밀번호가 일치하지 않습니다." });
