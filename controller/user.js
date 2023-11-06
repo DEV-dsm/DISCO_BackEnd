@@ -108,7 +108,7 @@ async function deleteAccount(req, res) {
     }
 
     await user.destroy({
-      where: { thisUser },
+      where: { userID: thisUser.userID },
     });
 
     return res.status(200).json({
