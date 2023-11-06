@@ -24,7 +24,7 @@ async function login(req, res) {
     // jwt 토큰 발행
     let accessToken = jwt.sign(
       {
-        userID: user.userID,
+        userID: thisUser.userID,
       },
       process.env.SECRET,
       {
