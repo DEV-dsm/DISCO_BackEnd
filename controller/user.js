@@ -72,7 +72,7 @@ async function logout(req, res) {
   const { userID } = req.decoded;
 
   try {
-    const thisUser = user.findOne({ where: { userID } });
+    const thisUser = await user.findOne({ where: { userID } });
 
     if (!thisUser) {
       return res.status(404).json({
@@ -80,14 +80,15 @@ async function logout(req, res) {
       });
     }
 
-    thisUser.update({
-      toekn: null,
+    await thisUser.update({
+      token: null,
     });
 
     return res.status(200).json({
       message: "로그아웃 성공",
     });
   } catch (err) {
+    console.log(err);
     return res.status(500).json({
       message: "서버 에러",
     });
