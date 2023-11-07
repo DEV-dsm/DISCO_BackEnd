@@ -1,6 +1,6 @@
 // controller/user.js
 const bcrypt = require("bcrypt");
-const user = require("../models/user");
+const { user } = require("../models");
 const jwt = require("jsonwebtoken");
 
 async function login(req, res) {
@@ -15,7 +15,7 @@ async function login(req, res) {
       });
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await bcrypt.compare(password, thisUser.password);
 
     if (!isPasswordValid) {
       return res.status(401).json({ message: "비밀번호가 일치하지 않습니다." });
@@ -24,7 +24,7 @@ async function login(req, res) {
     // jwt 토큰 발행
     let accessToken = jwt.sign(
       {
-        userID: user.userID,
+        userID: thisUser.userID,
       },
       process.env.SECRET,
       {
@@ -72,7 +72,7 @@ async function logout(req, res) {
   const { userID } = req.decoded;
 
   try {
-    const thisUser = user.findOne({ where: { userID } });
+    const thisUser = await user.findOne({ where: { userID } });
 
     if (!thisUser) {
       return res.status(404).json({
@@ -80,14 +80,15 @@ async function logout(req, res) {
       });
     }
 
-    thisUser.update({
-      toekn: null,
+    await thisUser.update({
+      token: null,
     });
 
     return res.status(200).json({
       message: "로그아웃 성공",
     });
   } catch (err) {
+    console.log(err);
     return res.status(500).json({
       message: "서버 에러",
     });
@@ -107,7 +108,7 @@ async function deleteAccount(req, res) {
     }
 
     await user.destroy({
-      where: { thisUser },
+      where: { userID: thisUser.userID },
     });
 
     return res.status(200).json({
