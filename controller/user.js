@@ -122,9 +122,30 @@ async function deleteAccount(req, res) {
   }
 }
 
+async function getUserInfo(req, res) {
+  const { userID } = req.decoded;
+
+  try {
+    const userInfo = await user.findOne({
+      where: { userID },
+      attributes: { exclude: ["password", "token"] }, // 민감한 정보는 제외
+    });
+
+    if (!userInfo) {
+      return res.status(404).json({ message: "유저 정보를 찾을 수 없습니다." });
+    }
+
+    return res.status(200).json({ userInfo });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "서버 오류" });
+  }
+}
+
 module.exports = {
   login,
   signup,
   logout,
   deleteAccount,
+  getUserInfo,
 };
