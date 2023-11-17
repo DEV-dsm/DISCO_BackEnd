@@ -93,9 +93,90 @@ const getIssue = async (req, res) => {
   }
 };
 
+const createPost = async (req, res) => {
+  const { userID } = req.decoded;
+  const { title, body } = req.body;
+
+  try {
+    await post.create({
+      userID,
+      title,
+      body,
+    });
+
+    return res.status(201).json({
+      message: "게시물 작성 성공",
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      message: "게시물 작성 실패",
+    });
+  }
+};
+
+const updatePost = async (req, res) => {
+  const { userID } = req.decoded;
+  const { postID, title, body } = req.body;
+
+  try {
+    const thisPost = await post.findOne({
+      where: { postID, userID },
+    });
+
+    if (!thisPost) {
+      return res.status(404).json({
+        message: "게시물을 찾을 수 없습니다.",
+      });
+    }
+
+    thisPost.title = title;
+    thisPost.body = body;
+    await thisPost.save();
+
+    return res.status(200).json({
+      message: "게시물 수정 성공",
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      message: "게시물 수정 실패",
+    });
+  }
+};
+
+const deletePost = async (req, res) => {
+  const { userID } = req.decoded;
+  const { postID } = req.params;
+
+  try {
+    const thisPost = await post.findOne({
+      where: { postID, userID },
+    });
+
+    if (!thisPost) {
+      return res.status(404).json({
+        message: "게시물을 찾을 수 없습니다.",
+      });
+    }
+
+    await thisPost.destroy();
+
+    return res.status(204).json({});
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      message: "게시물 삭제 실패",
+    });
+  }
+};
+
 module.exports = {
   searchPost,
   getPost,
   getDiary,
   getIssue,
+  createPost,
+  updatePost,
+  deletePost,
 };
