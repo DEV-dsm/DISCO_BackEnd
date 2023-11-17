@@ -160,7 +160,10 @@ async function updateUser(req, res) {
     // 원하는 수정 로직을 여기에 추가
     // 예: 이름, 비밀번호, 이메일, 상태메시지를 업데이트
     if (name) thisUser.name = name;
-    if (password) thisUser.password = password;
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      thisUser.password = hashedPassword;
+    }
     if (email) thisUser.email = email;
     if (status) thisUser.status = status;
 
