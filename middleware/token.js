@@ -11,16 +11,6 @@ async function authenticationMiddleware(req, res, next) {
       return res.status(401).json({ message: "인증 토큰이 없습니다." });
     }
 
-    const thisUser = await user.findOne({
-      where: { token },
-    });
-
-    if (!thisUser) {
-      return res.status(401).json({
-        message: "토큰이 DB값과 일치하지 않습니다.",
-      });
-    }
-
     // 토큰 검증
     jwt.verify(token, process.env.SECRET, (err, decoded) => {
       if (err) {
