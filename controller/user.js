@@ -54,14 +54,12 @@ async function login(req, res) {
       req.decoded.exp * 1000 + 1000 * 3600 * 9
     ).toISOString();
 
-    res
-      .status(200)
-      .json({
-        message: "로그인 성공",
-        accessToken,
-        발행시간: iat,
-        만료시간: exp,
-      });
+    res.status(200).json({
+      message: "로그인 성공",
+      accessToken,
+      발행시간: iat,
+      만료시간: exp,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "서버 오류" });
@@ -80,16 +78,57 @@ async function signup(req, res) {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    await user.create({
+    // 이메일 인증을 위한 랜덤 토큰 생성
+    const verificationToken = crypto.randomBytes(32).toString("hex");
+
+    // 사용자 생성
+    const createdUser = await user.create({
       name: username,
       password: hashedPassword,
       email,
+      verificationToken,
     });
 
-    res.status(201).json({ message: "회원가입 성공" });
+    // 이메일 인증 메일 발송
+    await sendVerificationEmail(email, verificationToken);
+
+    res.status(201).json({ message: "회원가입 성공. 이메일로 인증해주세요." });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "서버 오류" });
+  }
+}
+
+async function verifyEmail(req, res) {
+  const { email } = req.params;
+
+  if (!token) {
+    return res.status(400).json({ message: "토큰이 필요합니다." });
+  }
+
+  try {
+    const thisUser = await user.findOne({
+      where: { verificationToken: token },
+    });
+
+    if (!thisUser) {
+      return res.status(404).json({ message: "유저를 찾을 수 없습니다." });
+    }
+
+    // 인증 완료 처리
+    await thisUser.update({
+      isVerified: true,
+      verificationToken: null,
+    });
+
+    return res.status(200).json({
+      message: "이메일 인증이 완료되었습니다.",
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      message: "이메일 인증에 실패했습니다.",
+    });
   }
 }
 
