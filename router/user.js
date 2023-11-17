@@ -1,18 +1,15 @@
 const express = require("express");
 const router = express.Router();
 const user = require("../controller/user");
-const token = require("../middleware/token");
+const tokenMiddleware = require("../middleware/token");
 
 router.post("/login", user.login);
 router.post("/signup", user.signup);
-<<<<<<< Updated upstream
-router.get("/logout", token, user.logout);
-router.post("/delete-account", token, user.deleteAccount);
-router.get("/info", token, user.getUserInfo);
-router.patch("/update", authMiddleware, user.updateUser);
-=======
-router.post("/logout", tocken, user.logout);
-router.delete("/", tocken, user.deleteAccount);
->>>>>>> Stashed changes
+router.get("/logout", tokenMiddleware, user.logout);
+router.post("/", tokenMiddleware, user.deleteAccount);
+router.get("/info", tokenMiddleware, user.getUserInfo);
+router.patch("/update", tokenMiddleware, user.updateUser);
+router.post("/logout", tokenMiddleware, user.logout);
+router.delete("/", tokenMiddleware, user.deleteAccount);
 
 module.exports = router;
