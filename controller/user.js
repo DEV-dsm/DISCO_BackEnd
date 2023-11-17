@@ -18,7 +18,9 @@ async function login(req, res) {
     const isPasswordValid = await bcrypt.compare(password, thisUser.password);
 
     if (!isPasswordValid) {
-      return res.status(401).json({ message: "비밀번호가 일치하지 않습니다." });
+      return res.status(401).json({
+        message: "비밀번호가 일치하지 않습니다.",
+      });
     }
 
     // jwt 토큰 발행
@@ -28,7 +30,7 @@ async function login(req, res) {
       },
       process.env.SECRET,
       {
-        expiresIn: "1h",
+        expiresIn: "3h",
       }
     );
 
@@ -36,7 +38,30 @@ async function login(req, res) {
       token: accessToken,
     });
 
-    res.status(200).json({ message: "로그인 성공", accessToken });
+    let miliSecond = 0;
+    jwt.verify(accessToken, process.env.SECRET, (err, decoded) => {
+      if (err)
+        return res.status(500).json({
+          message: "해독과정에서 오류발생",
+        });
+      req.decoded = decoded;
+    });
+
+    const iat = new Date(
+      req.decoded.iat * 1000 + 1000 * 3600 * 9
+    ).toISOString();
+    const exp = new Date(
+      req.decoded.exp * 1000 + 1000 * 3600 * 9
+    ).toISOString();
+
+    res
+      .status(200)
+      .json({
+        message: "로그인 성공",
+        accessToken,
+        발행시간: iat,
+        만료시간: exp,
+      });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "서버 오류" });
