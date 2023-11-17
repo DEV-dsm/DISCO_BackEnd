@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const user = require("../controller/user");
-const token = require("../middleware/token");
+const tokenMiddleware = require("../middleware/token");
 
 router.post("/login", user.login);
 router.post("/signup", user.signup);
