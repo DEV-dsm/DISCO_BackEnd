@@ -2,7 +2,7 @@ const { Op } = require("sequelize");
 const post = require("../models");
 
 const searchPost = async (req, res) => {
-  const { keyword } = req.qurey;
+  const { keyword } = req.query;
 
   try {
     let postList = await post.findAll({
