@@ -142,10 +142,52 @@ async function getUserInfo(req, res) {
   }
 }
 
+async function updateUser(req, res) {
+  const { userID } = req.decoded;
+  const { name, password, email, status } = req.body;
+
+  try {
+    const thisUser = await user.findOne({
+      where: { userID },
+    });
+
+    if (!thisUser) {
+      return res.status(404).json({
+        message: "유저를 찾을 수 없습니다.",
+      });
+    }
+
+    // 원하는 수정 로직을 여기에 추가
+    // 예: 이름, 비밀번호, 이메일, 상태메시지를 업데이트
+    if (name) thisUser.name = name;
+    if (password) thisUser.password = password;
+    if (email) thisUser.email = email;
+    if (status) thisUser.status = status;
+
+    await thisUser.save();
+
+    return res.status(200).json({
+      message: "유저 정보가 성공적으로 수정되었습니다.",
+      updatedUser: {
+        name: thisUser.name,
+        email: thisUser.email,
+        status: thisUser.status,
+        // 원하는 필드 추가 가능
+      },
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      message: "유저 정보 수정에 실패했습니다.",
+    });
+  }
+}
+
 module.exports = {
   login,
   signup,
   logout,
   deleteAccount,
   getUserInfo,
+  updateUser,
 };
