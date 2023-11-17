@@ -7,7 +7,7 @@ const cors = require("cors");
 const port = 8080;
 
 let corsOptions = {
-  origin: "https://localhost:8080",
+  origin: "*",
   credentials: true,
 };
 

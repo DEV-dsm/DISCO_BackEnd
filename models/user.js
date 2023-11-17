@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     password: {
-      type: DataTypes.STRING(50),
+      type: DataTypes.STRING(100),
       allowNull: false,
     },
     email: {
@@ -24,11 +24,8 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: "상태메세지가 없습니다.",
     },
-    salt: {
-      type: DataTypes.STRING(40),
-    },
     token: {
-      type: DataTypes.STRING(30),
+      type: DataTypes.STRING(200),
     },
   });
 };
