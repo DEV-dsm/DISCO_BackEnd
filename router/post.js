@@ -3,14 +3,16 @@ const post = require("../controller/post");
 const like = require("../controller/like");
 const authMiddleware = require("../middleware/token");
 
+// 테스트 필요
 router.get("/issue", post.getIssue);
-router.get("/:postID", post.getPost);
+router.post("/create", authMiddleware, post.createPost);
 router.get("/search", post.searchPost);
+
 router.get("/diary", authMiddleware, post.getDiary);
+router.get("/:postID", post.getPost);
+router.patch("/:postID", authMiddleware, post.updatePost);
+router.delete("/:postID", authMiddleware, post.deletePost);
 router.post("/:postID/like", authMiddleware, like.createLike);
 router.delete("/:postID/like", authMiddleware, like.deleteLike);
-router.post("/create", authMiddleware, post.createPost);
-router.patch("/postld", authMiddleware, post.updatePost);
-router.delete("/postld", authMiddleware, post.deletePost);
 
 module.exports = router;

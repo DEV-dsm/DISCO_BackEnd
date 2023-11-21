@@ -3,7 +3,7 @@ const { post } = require("../models");
 
 //좋아요 등록
 const createLike = async (req, res) => {
-  const postID = req.params.postID;
+  const postID = Number(req.params.postID);
   const { userID } = req.decoded;
 
   try {
@@ -17,7 +17,7 @@ const createLike = async (req, res) => {
       });
     }
 
-    if (!user) {
+    if (!userID) {
       return res.status(401).json({
         message: "로그인 안된 사용자",
       });
@@ -34,7 +34,7 @@ const createLike = async (req, res) => {
     }
 
     await like.create({
-      userID: user.userID,
+      userID,
       postID,
     });
 

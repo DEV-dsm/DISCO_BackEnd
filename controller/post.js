@@ -1,5 +1,5 @@
 const { Op } = require("sequelize");
-const post = require("../models");
+const { post } = require("../models");
 
 const searchPost = async (req, res) => {
   const { keyword } = req.query;
