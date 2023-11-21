@@ -4,8 +4,8 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER(),
       primaryKey: true,
       references: {
-        model: "users",
-        key: "userID",
+        model: "posts",
+        key: "postID",
       },
     },
     userID: {

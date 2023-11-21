@@ -1,11 +1,12 @@
-const user = require("../models/user");
-const comment = require("../models/comment");
-const cocomment = require("../models/cocomment");
+const { user } = require("../models");
+const { comment } = require("../models");
+const { cocomment } = require("../models");
 
 //대댓글 생성
 const createCocomment = async (req, res) => {
   const { userID } = req.decoded;
-  const { commentID, body } = req.body;
+  const { body } = req.body;
+  const { commentID } = req.params;
 
   try {
     const thisUser = await user.findOne({
@@ -30,6 +31,7 @@ const createCocomment = async (req, res) => {
 
     await cocomment.create({
       userID: thisUser.userID,
+      postID: thisComment.postID,
       commentID: commentID,
       body,
     });
@@ -47,11 +49,11 @@ const createCocomment = async (req, res) => {
 
 //대댓글 목록조회
 const getCocommentList = async (req, res) => {
-  const { commentID } = req.body;
+  const { commentID } = req.params;
 
   try {
-    const cocommentList = await cocomment.findALL({
-      where: commentID,
+    const cocommentList = await cocomment.findAll({
+      where: { commentID },
     });
 
     return res.status(200).json({
@@ -69,13 +71,13 @@ const getCocommentList = async (req, res) => {
 //대댓글 삭제
 const deleteCocomment = async (req, res) => {
   const { userID } = req.decoded;
-  const cocommentID = req.body;
+  const { cocommentID } = req.params;
 
   try {
     const thisCocomment = await cocomment.findOne({
       where: { cocommentID },
     });
-    const thisUser = await cocomment.findOne({
+    const thisUser = await user.findOne({
       where: { userID },
     });
 
@@ -95,13 +97,9 @@ const deleteCocomment = async (req, res) => {
       });
     }
 
-    await cocomment.destroy({
-      where: { thisCocomment },
-    });
+    await thisCocomment.destroy({});
 
-    return res.status(200).json({
-      massage: "요청에 성공했습니다.",
-    });
+    return res.status(204).json({});
   } catch (err) {
     console.error(err);
     return res.status(500).json({
@@ -112,13 +110,14 @@ const deleteCocomment = async (req, res) => {
 
 //대댓글 업뎃
 const updateCocomment = async (req, res) => {
+  const { cocommentID } = req.params;
   const { userID } = req.decoded;
-  const { cocommentID, body } = req.body;
+  const { body } = req.body;
   try {
     const thisUser = await user.findOne({
       where: { userID },
     });
-    const thisCocoment = await cocomment.findOne({
+    const thisCocomment = await cocomment.findOne({
       where: { cocommentID },
     });
 
@@ -127,12 +126,12 @@ const updateCocomment = async (req, res) => {
         massage: "존재하지 않는 사용자",
       });
     }
-    if (!thisCocoment) {
+    if (!thisCocomment) {
       return res.status(404).json({
         massage: "존재하지 않는 대댓글",
       });
     }
-    if (thisCocoment.userID != thisUser.userID) {
+    if (thisCocomment.userID != thisUser.userID) {
       return res.status(403).json({
         massage: "권한이 없는 사용자",
       });
@@ -142,8 +141,11 @@ const updateCocomment = async (req, res) => {
       body,
     });
 
-    return res.status(204).json({});
+    return res.status(200).json({
+      massage: "요청에 성공했습니다.",
+    });
   } catch (err) {
+    console.error(err);
     return res.status(500).json({
       massage: "요청에 실패했습니다.",
     });

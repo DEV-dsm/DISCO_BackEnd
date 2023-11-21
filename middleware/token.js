@@ -3,7 +3,6 @@ const { user } = require("../models");
 
 async function authenticationMiddleware(req, res, next) {
   // 토큰 추출
-  console.log(req.headers)
   const token = req.headers.authorization;
 
   try {

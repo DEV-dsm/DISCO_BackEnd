@@ -1,11 +1,12 @@
-const user = require("../models/user");
-const post = require("../models/post");
-const comment = require("../models/comment");
+const { user } = require("../models");
+const { post } = require("../models");
+const { comment } = require("../models");
 
 //댓글 생성
 const createComment = async (req, res) => {
+  const { postID } = req.params;
   const { userID } = req.decoded;
-  const { postID, body } = req.body;
+  const { body } = req.body;
 
   try {
     const thisUser = await user.findOne({
@@ -22,7 +23,7 @@ const createComment = async (req, res) => {
     }
     if (!thisPost) {
       return res.status(404).json({
-        massage: "존재하지 않는 댓글",
+        massage: "존재하지 않는 게시물",
       });
     }
 
@@ -36,6 +37,7 @@ const createComment = async (req, res) => {
       massage: "요청에 성공하였습니다.",
     });
   } catch (err) {
+    console.error(err);
     return res.status(500).json({
       massage: "요청에 실패하였습니다.",
     });
@@ -46,8 +48,8 @@ const createComment = async (req, res) => {
 const getCommentList = async (req, res) => {
   const { postID } = req.body;
   try {
-    const commentList = comment.findAll({
-      where: postID,
+    const commentList = await comment.findAll({
+      where: { postID },
     });
 
     return res.status(200).json({
@@ -64,8 +66,9 @@ const getCommentList = async (req, res) => {
 
 //댓글 업뎃
 const updateComment = async (req, res) => {
+  const { commentID } = req.params;
   const { userID } = req.decoded;
-  const { commentID, body } = req.body;
+  const { body } = req.body;
 
   try {
     const thisUser = await user.findOne({
@@ -100,6 +103,7 @@ const updateComment = async (req, res) => {
       massage: "요청에 성공했습니다.",
     });
   } catch (err) {
+    console.error(err);
     return res.status(500).json({
       massage: "요청에 실패했습니다.",
     });
@@ -108,12 +112,12 @@ const updateComment = async (req, res) => {
 
 //댓글 삭제
 const deleteComment = async (req, res) => {
-  const token = req.header["access-token"];
-  const { commentID } = req.body;
+  const { commentID } = req.params;
+  const { userID } = req.decoded;
 
   try {
     const thisUser = await user.findOne({
-      where: { token },
+      where: { userID },
     });
     const thisComment = await comment.findOne({
       where: { commentID },
@@ -135,12 +139,11 @@ const deleteComment = async (req, res) => {
       });
     }
 
-    await comment.destroy({
-      where: { thisComment },
-    });
+    await thisComment.destroy({});
 
     return res.status(204).json({});
   } catch (err) {
+    console.error(err);
     return res.status(500).json({
       massage: "요청에 실패했습니다",
     });
