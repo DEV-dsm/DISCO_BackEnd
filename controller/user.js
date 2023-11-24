@@ -54,14 +54,12 @@ async function login(req, res) {
       req.decoded.exp * 1000 + 1000 * 3600 * 9
     ).toISOString();
 
-    res
-      .status(200)
-      .json({
-        message: "로그인 성공",
-        accessToken,
-        발행시간: iat,
-        만료시간: exp,
-      });
+    res.status(200).json({
+      message: "로그인 성공",
+      accessToken,
+      발행시간: iat,
+      만료시간: exp,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "서버 오류" });
@@ -78,15 +76,56 @@ async function signup(req, res) {
       return res.status(409).json({ message: "이미 등록된 이메일입니다." });
     }
 
+    // 무작위 인증 토큰 생성
+    const verificationToken = jwt.sign(
+      { email },
+      process.env.VERIFICATION_SECRET,
+      {
+        expiresIn: "1d", // 토큰 유효 기간 1일
+      }
+    );
+
+    // 인증 이메일 전송
+    await sendVerificationEmail(email, verificationToken);
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // 사용자 정보 및 인증 토큰 저장
     await user.create({
       name: username,
       password: hashedPassword,
       email,
+      verificationToken,
     });
 
-    res.status(201).json({ message: "회원가입 성공" });
+    res.status(201).json({ message: "회원가입 성공. 이메일을 확인하세요." });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "서버 오류" });
+  }
+}
+
+// 이메일 인증 엔드포인트
+async function verifyEmail(req, res) {
+  const { token } = req.query;
+
+  try {
+    // 토큰 검증
+    const decoded = jwt.verify(token, process.env.VERIFICATION_SECRET);
+
+    // 사용자 상태를 '인증됨'으로 업데이트
+    const updatedUser = await user.update(
+      { status: "verified" },
+      { where: { email: decoded.email } }
+    );
+
+    if (updatedUser) {
+      return res
+        .status(200)
+        .json({ message: "이메일이 성공적으로 인증되었습니다." });
+    } else {
+      return res.status(404).json({ message: "이메일을 찾을 수 없습니다." });
+    }
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "서버 오류" });
@@ -211,6 +250,24 @@ async function updateUser(req, res) {
   }
 }
 
+//이메일 전송
+async function sendVerificationEmail(email, verificationToken) {
+  // nodemailer 전송 설정
+  const transporter = nodemailer.createTransport({
+    // 이메일 서비스 설정
+  });
+
+  const mailOptions = {
+    from: "your-email@example.com",
+    to: email,
+    subject: "이메일 인증",
+    html: `<p>다음 링크를 클릭하여 이메일을 인증하세요: 
+           <a href="${process.env.BASE_URL}/verify?token=${verificationToken}">이메일 인증</a></p>`,
+  };
+
+  await transporter.sendMail(mailOptions);
+}
+
 module.exports = {
   login,
   signup,
@@ -218,4 +275,5 @@ module.exports = {
   deleteAccount,
   getUserInfo,
   updateUser,
+  sendVerificationEmail,
 };
