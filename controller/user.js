@@ -54,14 +54,12 @@ async function login(req, res) {
       req.decoded.exp * 1000 + 1000 * 3600 * 9
     ).toISOString();
 
-    res
-      .status(200)
-      .json({
-        message: "로그인 성공",
-        accessToken,
-        발행시간: iat,
-        만료시간: exp,
-      });
+    res.status(200).json({
+      message: "로그인 성공",
+      accessToken,
+      발행시간: iat,
+      만료시간: exp,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "서버 오류" });
@@ -211,6 +209,24 @@ async function updateUser(req, res) {
   }
 }
 
+//이메일 전송
+async function sendVerificationEmail(email, verificationToken) {
+  // nodemailer 전송 설정
+  const transporter = nodemailer.createTransport({
+    // 이메일 서비스 설정
+  });
+
+  const mailOptions = {
+    from: "your-email@example.com",
+    to: email,
+    subject: "이메일 인증",
+    html: `<p>다음 링크를 클릭하여 이메일을 인증하세요: 
+           <a href="${process.env.BASE_URL}/verify?token=${verificationToken}">이메일 인증</a></p>`,
+  };
+
+  await transporter.sendMail(mailOptions);
+}
+
 module.exports = {
   login,
   signup,
@@ -218,4 +234,5 @@ module.exports = {
   deleteAccount,
   getUserInfo,
   updateUser,
+  sendVerificationEmail,
 };
