@@ -98,32 +98,30 @@ const createPost = async (req, res) => {
   const { title, body } = req.body;
 
   try {
-    // 게시물 생성
-    const newPost = await post.create({
+    await post.create({
       userID,
       title,
       body,
     });
 
     return res.status(201).json({
-      message: "게시물이 성공적으로 작성되었습니다.",
-      newPost,
+      message: "게시물 작성 성공",
     });
   } catch (err) {
     console.error(err);
     return res.status(500).json({
-      message: "게시물 작성에 실패했습니다.",
+      message: "게시물 작성 실패",
     });
   }
 };
 
 const updatePost = async (req, res) => {
-  const { postID } = req.params;
-  const { title, body } = req.body;
+  const { userID } = req.decoded;
+  const { postID, title, body } = req.body;
 
   try {
     const thisPost = await post.findOne({
-      where: { postID },
+      where: { postID, userID },
     });
 
     if (!thisPost) {
@@ -132,32 +130,28 @@ const updatePost = async (req, res) => {
       });
     }
 
-    if (title) thisPost.title = title;
-    if (body) thisPost.body = body;
-
+    thisPost.title = title;
+    thisPost.body = body;
     await thisPost.save();
 
     return res.status(200).json({
-      message: "게시물이 성공적으로 수정되었습니다.",
-      updatedPost: {
-        title: thisPost.title,
-        body: thisPost.body,
-      },
+      message: "게시물 수정 성공",
     });
   } catch (err) {
     console.error(err);
     return res.status(500).json({
-      message: "게시물 수정에 실패했습니다.",
+      message: "게시물 수정 실패",
     });
   }
 };
 
 const deletePost = async (req, res) => {
+  const { userID } = req.decoded;
   const { postID } = req.params;
 
   try {
     const thisPost = await post.findOne({
-      where: { postID },
+      where: { postID, userID },
     });
 
     if (!thisPost) {
@@ -168,13 +162,11 @@ const deletePost = async (req, res) => {
 
     await thisPost.destroy();
 
-    return res.status(204).json({
-      message: "게시물이 성공적으로 삭제되었습니다.",
-    });
+    return res.status(204).json({});
   } catch (err) {
     console.error(err);
     return res.status(500).json({
-      message: "게시물 삭제에 실패했습니다.",
+      message: "게시물 삭제 실패",
     });
   }
 };
