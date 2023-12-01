@@ -224,10 +224,10 @@ async function sendVerificationEmail(email, verificationToken) {
 }
 
 module.exports = {
-  login,
-  signup,
-  logout,
-  deleteAccount,
-  getUserInfo,
-  updateUser,
+    login,
+    signup,
+    logout,
+    deleteAccount,
+    getUserInfo,
+    updateUser
 };
