@@ -1,9 +1,8 @@
 const jwt = require("jsonwebtoken");
-const { user } = require("../models");
 
 async function authenticationMiddleware(req, res, next) {
   // 토큰 추출
-  const token = req.headers.authorization;
+  const token = req.headers.authorization.split(' ')[1];
 
   try {
     if (!token) {
