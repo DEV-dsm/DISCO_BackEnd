@@ -2,6 +2,7 @@
 const bcrypt = require("bcrypt");
 const { user } = require("../models");
 const jwt = require("jsonwebtoken");
+const nodemailer = require("nodemailer");
 
 async function login(req, res) {
   const { username, password } = req.body;
@@ -206,21 +207,42 @@ async function updateUser(req, res) {
 }
 
 //이메일 전송
-async function sendVerificationEmail(email, verificationToken) {
-  // nodemailer 전송 설정
-  const transporter = nodemailer.createTransport({
-    // 이메일 서비스 설정
-  });
+async function sendVerificationEmail(req, res) {
+  const { email } = req.body;
+  const code = Math.floor(Math.random() * 89999 + 10000);
 
-  const mailOptions = {
-    from: "your-email@example.com",
-    to: email,
-    subject: "이메일 인증",
-    html: `<p>다음 링크를 클릭하여 이메일을 인증하세요: 
-           <a href="${process.env.BASE_URL}/verify?token=${verificationToken}">이메일 인증</a></p>`
-  };
+  try {
+    // nodemailer 전송 설정
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.MAIL_USER,
+        pass: process.env.MAIL_PASS
+      }
+    });
 
-  await transporter.sendMail(mailOptions);
+    const mailOptions = {
+      from: process.env.USER,
+      to: email,
+      subject: "DISCO 이메일 인증",
+      html: `<h2>이메일 인증</h2>
+      <div class="email">${email}</div>
+      <p>아래 인증코드를 입력해 본인임을 확인해주세요</p>
+      <div class="code">${code}</div>`
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    return res.status(200).json({
+      message: "인증 코드가 발행되었습니다",
+      code
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(400).json({
+      message: "인증 코드 발행에 실패했습니다"
+    });
+  }
 }
 
 module.exports = {
@@ -229,5 +251,6 @@ module.exports = {
   logout,
   deleteAccount,
   getUserInfo,
-  updateUser
+  updateUser,
+  sendVerificationEmail
 };
