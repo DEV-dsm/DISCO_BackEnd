@@ -249,6 +249,7 @@ async function sendVerificationEmail(req, res) {
   }
 }
 
+//아이디 찾기
 async function foundUserId(req, res) {
   const { email } = req.body;
 
@@ -264,11 +265,8 @@ async function foundUserId(req, res) {
     // 사용자의 아이디 찾기
     const foundUserId = userFound.userID;
 
-    // 인증코드 이메일 전송
-    await sendVerificationCodeEmail(email);
-
     return res.status(200).json({
-      message: "이메일로 인증코드가 전송되었습니다.",
+      userID: foundUserId,
     });
   } catch (error) {
     console.error(error);
@@ -288,18 +286,14 @@ async function foundUserPassword(req, res) {
       });
     }
 
-    // 인증코드 이메일 전송
-    await sendVerificationCodeEmail(email);
-
     return res.status(200).json({
-      message: "이메일로 인증코드가 전송되었습니다.",
+      userPassword: userFound.password,
     });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "서버 오류" });
   }
 }
-
 
 module.exports = {
   login,
