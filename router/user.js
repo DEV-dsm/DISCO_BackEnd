@@ -10,5 +10,7 @@ router.delete("/", token, user.deleteAccount);
 router.get("/info", token, user.getUserInfo);
 router.patch("/update", token, user.updateUser);
 router.post("/certified", user.sendVerificationEmail);
+router.post("/find-id", user.foundUserId);
+router.post("/find-password", user.foundUserPassword);
 
 module.exports = router;
