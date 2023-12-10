@@ -215,6 +215,16 @@ async function sendVerificationEmail(req, res) {
   const { email } = req.body;
   const code = Math.floor(Math.random() * 89999 + 10000);
 
+  const emailStyle = `<div id="container">
+      <img src="/img/logo.png" class="logo" style="width: 150px" />
+      <p class="title" style="margin-top: 30px; font-weight: 600; font-size: 25px">이메일 인증을 진행해주세요</p>
+      <p class="subTitle">안녕하세요, DISCO를 이용해주셔서 감사합니다 :)<br />DISCO 가입을 위해 아래 인증번호를 입력해주세요</p>
+      <div class="code" style="width: 400px; height: 70px; font-size: 40px; background-color: lightgray">
+        <p class="codeText" style="font-weight: 200px; letter-spacing: 10px; margin: 0 0 0 125px">${code}</p>
+      </div>
+      <p class="notice" style="width: 400px; text-align: center; font-size: 13px; color: gray">발행된 코드는 일회성입니다</p>
+    </div>`;
+
   try {
     // nodemailer 전송 설정
     const transporter = nodemailer.createTransport({
