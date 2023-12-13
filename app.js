@@ -4,7 +4,7 @@ const bodyparser = require("body-parser");
 const { sequelize } = require("./models/index");
 const cors = require("cors");
 
-const port = 3000;
+const port = 8080;
 
 let corsOptions = {
   origin: "*",
