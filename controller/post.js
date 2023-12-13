@@ -3,23 +3,23 @@ const { post } = require("../models");
 
 const searchPost = async (req, res) => {
   const { keyword } = req.query;
+  console.log(keyword);
 
   try {
     let postList = await post.findAll({
-      [Op.or]: [
-        { title: { [Op.like]: `%${keyword}%` } },
-        { body: { [Op.like]: `%${keyword}%` } },
-      ],
+      where: {
+        [Op.or]: [{ title: { [Op.like]: `%${keyword}%` } }, { body: { [Op.like]: `%${keyword}%` } }]
+      }
     });
 
     return res.status(200).json({
       message: "요청에 성공했습니다",
-      postList,
+      postList
     });
   } catch (err) {
     console.error(err);
     return res.status(500).json({
-      message: "요청에 실패했습니다",
+      message: "요청에 실패했습니다"
     });
   }
 };
@@ -29,22 +29,22 @@ const getPost = async (req, res) => {
 
   try {
     const thisPost = await post.findOne({
-      where: { postID },
+      where: { postID }
     });
 
     if (!thisPost) {
       return res.status(404).json({
-        message: "게시물 찾을수 없음",
+        message: "게시물 찾을수 없음"
       });
     }
 
     return res.status(200).json({
       message: "요청에 성공했습니다",
-      thisPost,
+      thisPost
     });
   } catch (err) {
     return res.status(500).json({
-      message: "요청에 실패했습니다.",
+      message: "요청에 실패했습니다."
     });
   }
 };
@@ -55,40 +55,42 @@ const getDiary = async (req, res) => {
   try {
     if (!userID) {
       return res.status(401).json({
-        message: "로그인 되지 않은 사용자",
+        message: "로그인 되지 않은 사용자"
       });
     }
 
     const diary = await post.findAll({
-      where: { userID },
+      where: { userID }
     });
 
     return res.status(200).json({
       message: "요청 성공",
-      diary,
+      diary
     });
   } catch (err) {
     return res.status(500).json({
-      message: "요청 실패",
+      message: "요청 실패"
     });
   }
 };
 
 const getIssue = async (req, res) => {
-  const day = new Date();
+  const today = new Date();
+  const date = today.getFullYear() + "-" + String(today.getMonth() + 1).padStart(2, "0") + "-" + String(today.getDate()).padStart(2, "0");
+  console.log(date);
 
   try {
     const issues = await post.findAll({
-      where: { createdAt: { [Op.like]: `%${day}` } },
+      where: { createdAt: { [Op.like]: `%${date}` } }
     });
 
     return res.status(200).json({
       message: "요청에 성공했습니다",
-      issues,
+      issues
     });
   } catch (err) {
     return res.status(500).json({
-      message: "요청에 실패했습니다",
+      message: "요청에 실패했습니다"
     });
   }
 };
@@ -97,20 +99,24 @@ const createPost = async (req, res) => {
   const { userID } = req.decoded;
   const { title, body } = req.body;
 
+  const today = new Date();
+  const date = today.getFullYear() + "-" + String(today.getMonth() + 1).padStart(2, "0") + "-" + String(today.getDate()).padStart(2, "0");
+
   try {
     await post.create({
       userID,
       title,
       body,
+      createdAt: date
     });
 
     return res.status(201).json({
-      message: "게시물 작성 성공",
+      message: "게시물 작성 성공"
     });
   } catch (err) {
     console.error(err);
     return res.status(500).json({
-      message: "게시물 작성 실패",
+      message: "게시물 작성 실패"
     });
   }
 };
@@ -121,12 +127,12 @@ const updatePost = async (req, res) => {
 
   try {
     const thisPost = await post.findOne({
-      where: { postID, userID },
+      where: { postID, userID }
     });
 
     if (!thisPost) {
       return res.status(404).json({
-        message: "게시물을 찾을 수 없습니다.",
+        message: "게시물을 찾을 수 없습니다."
       });
     }
 
@@ -135,12 +141,12 @@ const updatePost = async (req, res) => {
     await thisPost.save();
 
     return res.status(200).json({
-      message: "게시물 수정 성공",
+      message: "게시물 수정 성공"
     });
   } catch (err) {
     console.error(err);
     return res.status(500).json({
-      message: "게시물 수정 실패",
+      message: "게시물 수정 실패"
     });
   }
 };
@@ -151,12 +157,12 @@ const deletePost = async (req, res) => {
 
   try {
     const thisPost = await post.findOne({
-      where: { postID, userID },
+      where: { postID, userID }
     });
 
     if (!thisPost) {
       return res.status(404).json({
-        message: "게시물을 찾을 수 없습니다.",
+        message: "게시물을 찾을 수 없습니다."
       });
     }
 
@@ -166,7 +172,7 @@ const deletePost = async (req, res) => {
   } catch (err) {
     console.error(err);
     return res.status(500).json({
-      message: "게시물 삭제 실패",
+      message: "게시물 삭제 실패"
     });
   }
 };
@@ -178,5 +184,5 @@ module.exports = {
   getIssue,
   createPost,
   updatePost,
-  deletePost,
+  deletePost
 };

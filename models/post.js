@@ -3,23 +3,27 @@ module.exports = (sequelize, DataType) => {
     postID: {
       primaryKey: true,
       autoIncrement: true,
-      type: DataType.INTEGER(),
+      type: DataType.INTEGER()
     },
     userID: {
       type: DataType.INTEGER(),
       allowNull: false,
       references: {
         model: "users",
-        key: "userID",
-      },
+        key: "userID"
+      }
     },
     title: {
       allowNull: false,
-      type: DataType.STRING(),
+      type: DataType.STRING()
     },
     body: {
       allowNull: false,
-      type: DataType.STRING(),
+      type: DataType.STRING()
     },
+    createdAt: {
+      allowNull: false,
+      type: DataType.STRING()
+    }
   });
 };
