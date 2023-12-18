@@ -1,10 +1,10 @@
 const jwt = require("jsonwebtoken");
 
 async function authenticationMiddleware(req, res, next) {
-  // 토큰 추출
-  const token = req.headers.authorization.split(' ')[1];
-
   try {
+    // 토큰 추출
+    const token = req.headers.authorization.split(" ")[1];
+
     if (!token) {
       return res.status(401).json({ message: "인증 토큰이 없습니다." });
     }
@@ -13,7 +13,7 @@ async function authenticationMiddleware(req, res, next) {
     jwt.verify(token, process.env.SECRET, (err, decoded) => {
       if (err) {
         return res.status(401).json({
-          message: "토큰이 유효하지 않습니다.",
+          message: "토큰이 유효하지 않습니다."
         });
       }
       req.decoded = decoded; // 사용자 정보를 요청 객체에 추가
@@ -22,7 +22,7 @@ async function authenticationMiddleware(req, res, next) {
   } catch (err) {
     console.log(err);
     return res.status(500).json({
-      message: "토큰 인증과정 중 서버에서 오류발생",
+      message: "토큰 인증과정 중 서버에서 오류발생"
     });
   }
 }
