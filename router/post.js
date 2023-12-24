@@ -4,9 +4,8 @@ const like = require("../controller/like");
 const authMiddleware = require("../middleware/token");
 
 router.get("/issue", post.getIssue);
-router.post("/create", authMiddleware, post.createPost);
-router.get("/search", post.searchPost);
 router.get("/diary", authMiddleware, post.getDiary);
+router.post("/create", authMiddleware, post.createPost);
 router.get("/:postID", post.getPost);
 router.patch("/:postID", authMiddleware, post.updatePost);
 router.delete("/:postID", authMiddleware, post.deletePost);

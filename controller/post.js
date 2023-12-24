@@ -1,29 +1,6 @@
 const { Op } = require("sequelize");
 const { post } = require("../models");
 
-const searchPost = async (req, res) => {
-  const { keyword } = req.query;
-  console.log(keyword);
-
-  try {
-    let postList = await post.findAll({
-      where: {
-        [Op.or]: [{ title: { [Op.like]: `%${keyword}%` } }, { body: { [Op.like]: `%${keyword}%` } }]
-      }
-    });
-
-    return res.status(200).json({
-      message: "요청에 성공했습니다",
-      postList
-    });
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({
-      message: "요청에 실패했습니다"
-    });
-  }
-};
-
 const getPost = async (req, res) => {
   const postID = req.params.postID;
 
@@ -50,6 +27,7 @@ const getPost = async (req, res) => {
 };
 
 const getDiary = async (req, res) => {
+  const { keyword } = req.query;
   const { userID } = req.decoded;
 
   try {
@@ -60,7 +38,7 @@ const getDiary = async (req, res) => {
     }
 
     const diary = await post.findAll({
-      where: { userID }
+      where: { [Op.or]: [{ title: { [Op.like]: `%${keyword}%` } }, { body: { [Op.like]: `%${keyword}%` } }], userID }
     });
 
     return res.status(200).json({
@@ -75,13 +53,13 @@ const getDiary = async (req, res) => {
 };
 
 const getIssue = async (req, res) => {
-  const today = new Date();
-  const date = today.getFullYear() + "-" + String(today.getMonth() + 1).padStart(2, "0") + "-" + String(today.getDate()).padStart(2, "0");
-  console.log(date);
+  const { keyword } = req.query;
 
   try {
-    const issues = await post.findAll({
-      where: { createdAt: { [Op.like]: `%${date}` } }
+    let issues = await post.findAll({
+      where: {
+        [Op.or]: [{ title: { [Op.like]: `%${keyword}%` } }, { body: { [Op.like]: `%${keyword}%` } }]
+      }
     });
 
     return res.status(200).json({
@@ -179,7 +157,6 @@ const deletePost = async (req, res) => {
 };
 
 module.exports = {
-  searchPost,
   getPost,
   getDiary,
   getIssue,
