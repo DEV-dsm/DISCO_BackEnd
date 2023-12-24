@@ -2,16 +2,12 @@ const jwt = require("jsonwebtoken");
 
 async function authenticationMiddleware(req, res, next) {
   try {
-    console.log(req.headers);
-
     // 토큰 추출
     const token = req.headers.authorization.split(" ")[1];
 
     if (!token) {
       return res.status(401).json({ message: "인증 토큰이 없습니다." });
     }
-
-    console.log(token);
 
     // 토큰 검증
     jwt.verify(token, process.env.SECRET, (err, decoded) => {
