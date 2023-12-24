@@ -3,6 +3,7 @@ const post = require("../controller/post");
 const like = require("../controller/like");
 const authMiddleware = require("../middleware/token");
 
+router.get("/search", post.searchPost);
 router.get("/issue", post.getIssue);
 router.get("/diary", authMiddleware, post.getDiary);
 router.post("/create", authMiddleware, post.createPost);
