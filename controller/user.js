@@ -12,7 +12,7 @@ async function login(req, res) {
 
     if (!thisUser) {
       return res.status(404).json({
-        message: "등록된 사용자가 없습니다.",
+        message: "등록된 사용자가 없습니다."
       });
     }
 
@@ -20,46 +20,42 @@ async function login(req, res) {
 
     if (!isPasswordValid) {
       return res.status(401).json({
-        message: "비밀번호가 일치하지 않습니다.",
+        message: "비밀번호가 일치하지 않습니다."
       });
     }
 
     // jwt 토큰 발행
     let accessToken = jwt.sign(
       {
-        userID: thisUser.userID,
+        userID: thisUser.userID
       },
       process.env.SECRET,
       {
-        expiresIn: "3h",
+        expiresIn: "3h"
       }
     );
 
     await thisUser.update({
-      token: accessToken,
+      token: accessToken
     });
 
-    let miliSecond = 0;
     jwt.verify(accessToken, process.env.SECRET, (err, decoded) => {
       if (err)
         return res.status(500).json({
-          message: "해독과정에서 오류발생",
+          message: "해독과정에서 오류발생"
         });
       req.decoded = decoded;
     });
 
-    const iat = new Date(
-      req.decoded.iat * 1000 + 1000 * 3600 * 9
-    ).toISOString();
-    const exp = new Date(
-      req.decoded.exp * 1000 + 1000 * 3600 * 9
-    ).toISOString();
+    const iat = new Date(req.decoded.iat * 1000 + 1000 * 3600 * 9).toISOString();
+    const exp = new Date(req.decoded.exp * 1000 + 1000 * 3600 * 9).toISOString();
 
     res.status(200).json({
       message: "로그인 성공",
       accessToken,
+      userID: thisUser.userID,
       발행시간: iat,
-      만료시간: exp,
+      만료시간: exp
     });
   } catch (error) {
     console.error(error);
@@ -77,12 +73,14 @@ async function signup(req, res) {
       return res.status(409).json({ message: "이미 등록된 이메일입니다." });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password.toString(), 10);
+
+    console.log(hashedPassword);
 
     await user.create({
       name: username,
       password: hashedPassword,
-      email,
+      email
     });
 
     res.status(201).json({ message: "회원가입 성공" });
@@ -100,21 +98,21 @@ async function logout(req, res) {
 
     if (!thisUser) {
       return res.status(404).json({
-        message: "존재하지 않는 유저입니다.",
+        message: "존재하지 않는 유저입니다."
       });
     }
 
     await thisUser.update({
-      token: null,
+      token: null
     });
 
     return res.status(200).json({
-      message: "로그아웃 성공",
+      message: "로그아웃 성공"
     });
   } catch (err) {
     console.log(err);
     return res.status(500).json({
-      message: "서버 에러",
+      message: "서버 에러"
     });
   }
 }
@@ -127,21 +125,21 @@ async function deleteAccount(req, res) {
 
     if (!thisUser) {
       return res.status(404).json({
-        message: "존재하지 않는 유저.",
+        message: "존재하지 않는 유저."
       });
     }
 
     await user.destroy({
-      where: { userID: thisUser.userID },
+      where: { userID: thisUser.userID }
     });
 
     return res.status(200).json({
-      message: "회원 탈퇴 성공",
+      message: "회원 탈퇴 성공"
     });
   } catch (error) {
     console.error(error);
     res.status(500).json({
-      message: "서버 오류",
+      message: "서버 오류"
     });
   }
 }
@@ -152,7 +150,7 @@ async function getUserInfo(req, res) {
   try {
     const userInfo = await user.findOne({
       where: { userID },
-      attributes: { exclude: ["password", "token"] }, // 민감한 정보는 제외
+      attributes: { exclude: ["password", "token"] } // 민감한 정보는 제외
     });
 
     if (!userInfo) {
@@ -172,12 +170,12 @@ async function updateUser(req, res) {
 
   try {
     const thisUser = await user.findOne({
-      where: { userID },
+      where: { userID }
     });
 
     if (!thisUser) {
       return res.status(404).json({
-        message: "유저를 찾을 수 없습니다.",
+        message: "유저를 찾을 수 없습니다."
       });
     }
 
@@ -198,14 +196,14 @@ async function updateUser(req, res) {
       updatedUser: {
         name: thisUser.name,
         email: thisUser.email,
-        status: thisUser.status,
+        status: thisUser.status
         // 원하는 필드 추가 가능
-      },
+      }
     });
   } catch (err) {
     console.error(err);
     return res.status(500).json({
-      message: "유저 정보 수정에 실패했습니다.",
+      message: "유저 정보 수정에 실패했습니다."
     });
   }
 }
@@ -231,8 +229,8 @@ async function sendVerificationEmail(req, res) {
       service: "gmail",
       auth: {
         user: process.env.MAIL_USER,
-        pass: process.env.MAIL_PASS,
-      },
+        pass: process.env.MAIL_PASS
+      }
     });
 
     const mailOptions = {
@@ -242,19 +240,19 @@ async function sendVerificationEmail(req, res) {
       html: `<h2>이메일 인증</h2>
       <div class="email">${email}</div>
       <p>아래 인증코드를 입력해 본인임을 확인해주세요</p>
-      <div class="code">${code}</div>`,
+      <div class="code">${code}</div>`
     };
 
     await transporter.sendMail(mailOptions);
 
     return res.status(200).json({
       message: "인증 코드가 발행되었습니다",
-      code,
+      code
     });
   } catch (err) {
     console.error(err);
     return res.status(400).json({
-      message: "인증 코드 발행에 실패했습니다",
+      message: "인증 코드 발행에 실패했습니다"
     });
   }
 }
@@ -268,7 +266,7 @@ async function foundUserId(req, res) {
 
     if (!userFound) {
       return res.status(404).json({
-        message: "등록된 사용자가 없습니다.",
+        message: "등록된 사용자가 없습니다."
       });
     }
 
@@ -276,7 +274,7 @@ async function foundUserId(req, res) {
     const foundUserId = userFound.userID;
 
     return res.status(200).json({
-      userID: foundUserId,
+      userID: foundUserId
     });
   } catch (error) {
     console.error(error);
@@ -292,12 +290,12 @@ async function foundUserPassword(req, res) {
 
     if (!userFound) {
       return res.status(404).json({
-        message: "등록된 사용자가 없습니다.",
+        message: "등록된 사용자가 없습니다."
       });
     }
 
     return res.status(200).json({
-      userPassword: userFound.password,
+      userPassword: userFound.password
     });
   } catch (error) {
     console.error(error);
@@ -314,5 +312,5 @@ module.exports = {
   updateUser,
   sendVerificationEmail,
   foundUserId,
-  foundUserPassword,
+  foundUserPassword
 };
