@@ -123,7 +123,8 @@ const createPost = async (req, res) => {
 
 const updatePost = async (req, res) => {
   const { userID } = req.decoded;
-  const { postID, title, body } = req.body;
+  const { postID } = req.params;
+  const { title, body } = req.body;
 
   try {
     const thisPost = await post.findOne({
